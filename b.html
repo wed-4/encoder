@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restore Image from Base64 .dat File</title>
+</head>
+<body>
+
+<input type="file" id="fileInput" accept=".png">
+<br><br>
+<img id="restoredImage" alt="Restored Image" style="max-width: 300px; display: none;">
+
+<script>
+document.getElementById('fileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            // ファイルからBase64エンコードされた文字列を取得
+            const base64String = e.target.result;
+
+            // .datファイルの内容にはデータURLのプレフィックスが含まれています
+            // 画像データのプレフィックスを分離します
+            const imgData = base64String;
+
+            // 画像の表示
+            const img = document.getElementById('restoredImage');
+            img.src = imgData;
+            img.style.display = 'block';
+        };
+
+        // .datファイルをテキストとして読み込む
+        reader.readAsText(file);
+    }
+});
+</script>
+
+</body>
+</html>

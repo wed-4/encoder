@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encode Image and Download as .dat</title>
+</head>
+<body>
+
+<input type="file" id="fileInput" accept="image/*">
+<br><br>
+<img id="preview" alt="Image Preview" style="max-width: 300px; display: none;">
+<br><br>
+<textarea id="base64Output" rows="10" cols="50" placeholder="Base64 encoded string will appear here"></textarea>
+<br><br>
+<button id="downloadBtn" style="display: none;">Download falsified image</button>
+
+<script>
+// ランダムな13文字の文字列を生成する関数
+function generateRandomString(length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
+
+document.getElementById('fileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            // Base64エンコードされたデータURLを取得
+            const base64String = e.target.result;
+
+            // 画像のプレビューを表示
+            const preview = document.getElementById('preview');
+            preview.src = base64String;
+            preview.style.display = 'block';
+
+            // Base64エンコードされた文字列を表示
+            const output = document.getElementById('base64Output');
+            output.value = base64String;
+
+            // Base64データをdatファイルとしてダウンロードできるようにする
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.style.display = 'inline-block';
+            downloadBtn.onclick = function() {
+                const blob = new Blob([base64String], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+
+                // ランダムな13文字のファイル名を生成
+                const randomFileName = generateRandomString(13) + '.png';
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = randomFileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+        };
+
+        // 画像ファイルをBase64エンコード形式で読み込む
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+
+</body>
+</html>
